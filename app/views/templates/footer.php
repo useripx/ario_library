@@ -92,6 +92,42 @@
 
     <!-- Template Javascript -->
     <script src="<?= BASEURL; ?>/js/main.js"></script>
+    
+    <!-- Logout Animation Script -->
+    <script src="<?= BASEURL; ?>/js/logout.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Handle Logout Click with Animation
+        document.querySelectorAll('.logoutButton').forEach(button => {
+            button.addEventListener('click', () => {
+                // Wait for animation to finish
+                setTimeout(() => {
+                    window.location.href = "<?= BASEURL; ?>/auth/logout";
+                }, 3500); 
+            });
+        });
+    });
+    </script>
+
+    <?php if(isset($data['overdue_count']) && $data['overdue_count'] > 0) : ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    $(document).ready(function() {
+        Swal.fire({
+            title: 'Masa Pinjam Habis!',
+            text: 'Buku yang Anda pinjam telah habis masa pinjaman. Untuk meminjam lagi silahkan klik perpanjang. Jika perpanjang habis silahkan hubungi admin di wa.me/081358113087',
+            icon: 'warning',
+            confirmButtonText: 'Cek Pinjaman Saya',
+            footer: '<a href="https://wa.me/081358113087" target="_blank">Hubungi Admin di WhatsApp</a>'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '<?= BASEURL; ?>/loan';
+            }
+        });
+    });
+    </script>
+    <?php endif; ?>
 </body>
 
 </html>

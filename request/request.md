@@ -43,3 +43,6 @@ Fitur ini berfokus pada manajemen sistem, inventaris, dan kelancaran operasional
 * **Manajemen Denda:** Sistem yang secara otomatis menghitung denda keterlambatan berdasarkan tarif harian yang ditentukan, serta fitur pencatatan pembayaran denda.
 * **Laporan dan Statistik:** Fitur untuk menghasilkan laporan berkala (harian/bulanan/tahunan). Contohnya: statistik buku paling sering dipinjam, jumlah pengunjung, total denda yang terkumpul, dan laporan buku hilang.
 * **Manajemen Konten (CMS):** Fitur untuk memperbarui informasi di halaman depan website, seperti menambahkan banner promosi acara perpustakaan atau menulis berita terbaru.
+
+# Request 3
+sekarang fitur denda adalah unik buat agar telat mengembalikan akan ada peringatan pop up modern bertuliskan "Buku yang Anda pinjam telah habis masa pinjaman, untuk meminjam lagi silahkan klik perpanjang jika perpanjang habis silahkan hibingi admin di wa.me/081358113087

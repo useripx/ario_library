@@ -24,7 +24,7 @@ class Auth extends Controller {
             }
 
             // Check User (Member)
-            $user = $this->model('User_model')->getUserByEmail($username);
+            $user = $this->model('User_model')->getUserByUsernameOrEmail($username);
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];

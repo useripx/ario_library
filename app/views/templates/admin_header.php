@@ -85,6 +85,12 @@
             <a href="<?= BASEURL; ?>/admin/books" class="nav-link <?= ($data['judul'] == 'Kelola Buku') ? 'active' : ''; ?>">
                 <i class="fa fa-book-open me-2"></i> Kelola Buku
             </a>
+            <a href="<?= BASEURL; ?>/admin/sirkulasi" class="nav-link <?= ($data['judul'] == 'Sirkulasi') ? 'active' : ''; ?>">
+                <i class="fa fa-exchange-alt me-2"></i> Sirkulasi
+            </a>
+            <a href="<?= BASEURL; ?>/admin/members" class="nav-link <?= ($data['judul'] == 'Data Anggota') ? 'active' : ''; ?>">
+                <i class="fa fa-users me-2"></i> Data Anggota
+            </a>
             <a href="<?= BASEURL; ?>/admin/categories" class="nav-link <?= ($data['judul'] == 'Kategori') ? 'active' : ''; ?>">
                 <i class="fa fa-tags me-2"></i> Kategori
             </a>
@@ -99,6 +105,9 @@
                 <i class="fa fa-users-cog me-2"></i> Admin Cabang
             </a>
             <?php endif; ?>
+            <a href="<?= BASEURL; ?>/admin/profile" class="nav-link <?= ($data['judul'] == 'Profil Saya') ? 'active' : ''; ?>">
+                <i class="fa fa-user-circle me-2"></i> Profil Saya
+            </a>
             <div class="mt-auto p-4 mb-4">
                 <button class="logoutButton logoutButton--dark w-100 p-0" style="background: transparent; border: none;">
                     <svg class="doorway" viewBox="0 0 100 100">
