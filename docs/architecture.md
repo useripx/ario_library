@@ -1,44 +1,33 @@
-# Architecture Overview - Ario Library
+# Architecture - Ario Library (PHP Native MVC)
 
-Ario Library follows a custom **PHP Native MVC (Model-View-Controller)** pattern to ensure clean separation of concerns and maintainability.
+Proyek ini menggunakan pola arsitektur **Model-View-Controller (MVC)** yang dibangun secara native menggunakan PHP 8.4.15.
 
-## Directory Structure
+## 🏗️ Struktur Folder
 
-```text
-├── app/
-│   ├── controllers/    # Request handling logic
-│   ├── models/         # Database interactions
-│   └── views/          # HTML templates and UI components
-├── core/               # Framework core components
-│   ├── App.php         # Router and URL Parser
-│   ├── Controller.php  # Base Controller class
-│   └── Database.php    # Database connection (PDO)
-├── public/             # Web entry point
-│   ├── index.php       # The bootstrap file
-│   └── assets/         # CSS, JS, and Images
-└── config/             # System configuration
-```
+- **`app/`**: Folder utama aplikasi.
+  - **`core/`**: Berisi class inti (App.php, Controller.php, Database.php).
+  - **`controllers/`**: Menangani logika request dan memanggil model/view.
+  - **`models/`**: Menangani interaksi data dengan database (PDO).
+  - **`views/`**: Berisi file UI (PHP/HTML). Memiliki subfolder `templates/` untuk komponen reusable.
+- **`public/`**: Satu-satunya folder yang dapat diakses dari luar. Berisi `index.php` sebagai entry point dan asset (CSS, JS, Images).
+- **`config/`**: Konfigurasi basis data dan BASEURL.
+- **`db/`**: Skema database SQL dan data awal (seeds).
+- **`docs/`**: Dokumentasi teknis proyek.
 
-## Core Components
+## 🔄 Alur Request
+1. Request diarahkan ke `public/index.php` melalui `.htaccess`.
+2. `App.php` melakukan parsing URL untuk menentukan Controller, Method, dan Parameter.
+3. Controller memproses data (menggunakan Model jika perlu) dan memuat View yang sesuai.
 
-### 1. The Router (`App.php`)
-The `App` class parses the URL from the request (e.g., `/book/detail/1`). It splits the URL into:
-- **Controller**: Determines which class to instantiate (e.g., `BookController`).
-- **Method**: Determines which function to call (e.g., `detail`).
-- **Parameters**: Passes remaining URL segments as arguments to the method.
+## 🔐 Keamanan
+- **PDO Wrapper**: Menggunakan prepared statements untuk mencegah SQL Injection.
+- **Password Hashing**: Menggunakan algoritma `PASSWORD_DEFAULT`.
+- **Session Auth**: Halaman admin dan member dilindungi oleh verifikasi session.
 
-### 2. Base Controller (`Controller.php`)
-Provides utility methods for all controllers, such as:
-- `view($view, $data)`: Loads a view file and passes data to it.
-- `model($model)`: Instantiates a model class.
+## 🖼️ Sistem Layout
+Sistem layout dibagi menjadi dua kategori:
+1. **Frontend Layout**: `header.php` & `footer.php` untuk halaman umum.
+2. **Admin Layout**: `admin_header.php`, `admin_sidebar.php`, & `admin_footer.php` untuk panel manajemen.
 
-### 3. Database Handler (`Database.php`)
-Uses **PDO** for secure database connections and queries. It handles the connection string and provides a standard interface for models to interact with the database.
-
-## Workflow
-1. Request sent to `public/index.php`.
-2. `.htaccess` redirects request to `index.php?url=...`.
-3. `public/index.php` initializes the `App`.
-4. `App` routes the request to the appropriate `Controller`.
-5. `Controller` interacts with `Model` (if needed).
-6. `Controller` loads the `View` with data.
+---
+*Terakhir diperbarui: 18 April 2026*
