@@ -17,10 +17,10 @@ class User_model {
         return $this->db->single();
     }
 
-    public function getUserByEmail($email)
+    public function getUserByUsernameOrEmail($value)
     {
-        $this->db->query('SELECT * FROM ' . $this->table_user . ' WHERE email=:email');
-        $this->db->bind('email', $email);
+        $this->db->query('SELECT * FROM ' . $this->table_user . ' WHERE email=:val OR username=:val');
+        $this->db->bind('val', $value);
         return $this->db->single();
     }
 
@@ -32,6 +32,57 @@ class User_model {
         $this->db->bind('email', $data['email']);
         $this->db->bind('password', password_hash($data['password'], PASSWORD_DEFAULT));
         
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
+
+    public function getAdminById($id)
+    {
+        $this->db->query('SELECT * FROM ' . $this->table_admin . ' WHERE id=:id');
+        $this->db->bind('id', $id);
+        return $this->db->single();
+    }
+
+    public function getUserById($id)
+    {
+        $this->db->query('SELECT * FROM ' . $this->table_user . ' WHERE id=:id');
+        $this->db->bind('id', $id);
+        return $this->db->single();
+    }
+
+    public function updateAdminAccount($id, $username)
+    {
+        $this->db->query('UPDATE ' . $this->table_admin . ' SET username=:username WHERE id=:id');
+        $this->db->bind('username', $username);
+        $this->db->bind('id', $id);
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
+
+    public function updateUserAccount($id, $username, $email)
+    {
+        $this->db->query('UPDATE ' . $this->table_user . ' SET username=:username, email=:email WHERE id=:id');
+        $this->db->bind('username', $username);
+        $this->db->bind('email', $email);
+        $this->db->bind('id', $id);
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
+
+    public function updateAdminPassword($id, $password)
+    {
+        $this->db->query('UPDATE ' . $this->table_admin . ' SET password=:password WHERE id=:id');
+        $this->db->bind('password', password_hash($password, PASSWORD_DEFAULT));
+        $this->db->bind('id', $id);
+        $this->db->execute();
+        return $this->db->rowCount();
+    }
+
+    public function updateUserPassword($id, $password)
+    {
+        $this->db->query('UPDATE ' . $this->table_user . ' SET password=:password WHERE id=:id');
+        $this->db->bind('password', password_hash($password, PASSWORD_DEFAULT));
+        $this->db->bind('id', $id);
         $this->db->execute();
         return $this->db->rowCount();
     }

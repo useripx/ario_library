@@ -73,10 +73,21 @@ CREATE TABLE IF NOT EXISTS loans (
     due_date DATE NOT NULL,
     return_date DATE,
     status ENUM('borrowed', 'returned', 'late') DEFAULT 'borrowed',
+    renewal_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES books(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Table Wishlist
+CREATE TABLE IF NOT EXISTS wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    book_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
 -- Seed Admin
