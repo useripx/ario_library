@@ -59,4 +59,11 @@ class Book_model {
         $this->db->query('SELECT * FROM categories');
         return $this->db->resultSet();
     }
+
+    public function incrementViewsCount($id)
+    {
+        $this->db->query('UPDATE books SET views_count = views_count + 1 WHERE id = :id');
+        $this->db->bind('id', $id);
+        $this->db->execute();
+    }
 }

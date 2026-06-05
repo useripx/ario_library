@@ -24,14 +24,27 @@ class Loan extends Controller {
     {
         // Prevent double borrowing
         if ($this->model('Loan_model')->isBorrowedByUser($_SESSION['user_id'], $book_id)) {
+            Flasher::setFlash('Buku sedang dipinjam', 'Gagal', 'warning');
             header('Location: ' . BASEURL . '/book/detail/' . $book_id);
             exit;
         }
 
-        if ($this->model('Loan_model')->addLoan($_SESSION['user_id'], $book_id) > 0) {
+        $result = $this->model('Loan_model')->addLoan($_SESSION['user_id'], $book_id);
+
+        if ($result > 0) {
+            Flasher::setFlash('Buku berhasil dipinjam', 'Berhasil', 'success');
             header('Location: ' . BASEURL . '/loan');
             exit;
+        } elseif ($result == -1) {
+            Flasher::setFlash('Maksimal pinjam 3 buku!', 'Limit Tercapai', 'error');
+            header('Location: ' . BASEURL . '/loan');
+            exit;
+        } elseif ($result == -2) {
+            Flasher::setFlash('Stok buku habis!', 'Gagal', 'error');
+            header('Location: ' . BASEURL . '/book/detail/' . $book_id);
+            exit;
         } else {
+            Flasher::setFlash('Terjadi kesalahan saat meminjam buku', 'Gagal', 'error');
             header('Location: ' . BASEURL . '/book/detail/' . $book_id);
             exit;
         }

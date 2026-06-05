@@ -19,11 +19,21 @@
                     <div class="col-md-6">
                         <p class="mb-2"><strong>ISBN:</strong> <?= $data['book']['isbn'] ?: '-'; ?></p>
                         <p class="mb-2"><strong>Tanggal Terbit:</strong> <?= $data['book']['published_date'] ? date('d M Y', strtotime($data['book']['published_date'])) : '-'; ?></p>
-                        <p class="mb-2"><strong>Status:</strong> <span class="badge bg-success">Tersedia Digital</span></p>
+                        <p class="mb-2"><strong>Stok:</strong> 
+                            <?php if($data['book']['stock'] <= 0) : ?>
+                                <span class="badge bg-danger">Habis</span>
+                            <?php else : ?>
+                                <span class="badge bg-success"><?= $data['book']['stock']; ?> Tersedia</span>
+                            <?php endif; ?>
+                        </p>
                     </div>
                 </div>
 
-                <p class="mb-4">Buku ini tersedia dalam format digital (E-Book) dan dapat dibaca langsung melalui platform Ario Library setelah Anda melakukan peminjaman. Pinjaman berlaku selama 7 hari sebelum harus dikembalikan atau diperpanjang.</p>
+                <p class="mb-4"><?= !empty($data['book']['description']) ? nl2br(htmlspecialchars($data['book']['description'])) : '<em>Tidak ada deskripsi tersedia untuk buku ini.</em>'; ?></p>
+
+                <div class="alert alert-warning mb-4">
+                    <i class="fa fa-info-circle me-2"></i> <strong>Aturan Peminjaman:</strong> Buku ini tersedia dalam format digital (E-Book) dan dapat dibaca langsung melalui platform Ario Library setelah Anda melakukan peminjaman. Pinjaman berlaku selama 7 hari sebelum harus dikembalikan atau diperpanjang.
+                </div>
                 
                 <div class="d-flex align-items-center mb-4">
                     <?php if(!isset($_SESSION['user_id'])) : ?>
@@ -40,6 +50,13 @@
                                 </a>
                             </div>
                         </div>
+                    <?php elseif($data['book']['stock'] <= 0) : ?>
+                        <div class="alert alert-danger w-100 d-flex justify-content-between align-items-center">
+                            <span><i class="fa fa-exclamation-triangle me-2"></i> Maaf, stok buku ini sedang habis terpinjam.</span>
+                            <a href="<?= BASEURL; ?>/book/toggleWishlist/<?= $data['book']['id']; ?>" class="btn btn-<?= $data['is_wishlist'] ? 'danger' : 'outline-danger'; ?> btn-sm">
+                                <i class="fa fa-heart"></i>
+                            </a>
+                        </div>
                     <?php else : ?>
                         <a href="<?= BASEURL; ?>/loan/borrow/<?= $data['book']['id']; ?>" class="btn btn-primary py-3 px-5 me-3">Pinjam Sekarang</a>
                         <a href="<?= BASEURL; ?>/book/toggleWishlist/<?= $data['book']['id']; ?>" class="btn btn-<?= $data['is_wishlist'] ? 'danger' : 'outline-danger'; ?> py-3 px-4">
@@ -51,7 +68,7 @@
                 <div class="row g-4">
                     <div class="col-sm-6">
                         <div class="d-flex align-items-center border-start border-5 border-primary px-3">
-                            <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up">100</h1>
+                            <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up"><?= isset($data['book']['views_count']) ? $data['book']['views_count'] : 0; ?></h1>
                             <div class="ps-4">
                                 <p class="mb-0">Dilihat</p>
                                 <h6 class="text-uppercase mb-0">Kali</h6>
@@ -60,9 +77,9 @@
                     </div>
                     <div class="col-sm-6">
                         <div class="d-flex align-items-center border-start border-5 border-primary px-3">
-                            <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up">24</h1>
+                            <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up"><?= isset($data['book']['borrowed_count']) ? $data['book']['borrowed_count'] : 0; ?></h1>
                             <div class="ps-4">
-                                <p class="mb-0">Sedang</p>
+                                <p class="mb-0">Telah</p>
                                 <h6 class="text-uppercase mb-0">Dipinjam</h6>
                             </div>
                         </div>

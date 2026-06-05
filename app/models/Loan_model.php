@@ -10,9 +10,20 @@ class Loan_model {
 
     public function addLoan($userId, $bookId)
     {
+        // 1. Check if user already has 3 active loans
+        if ($this->getActiveLoanCount($userId) >= 3) {
+            return -1; // Limit reached
+        }
+
+        // 2. Check if book has stock
+        if ($this->getBookStock($bookId) <= 0) {
+            return -2; // Out of stock
+        }
+
         $loanDate = date('Y-m-d');
         $dueDate = date('Y-m-d', strtotime('+7 days'));
         
+        // Transaction manually or just sequence? Let's do sequence for simplicity if DB class allows.
         $this->db->query('INSERT INTO loans (book_id, user_id, loan_date, due_date, status) 
                           VALUES (:book_id, :user_id, :loan_date, :due_date, :status)');
         $this->db->bind('book_id', $bookId);
@@ -20,9 +31,32 @@ class Loan_model {
         $this->db->bind('loan_date', $loanDate);
         $this->db->bind('due_date', $dueDate);
         $this->db->bind('status', 'borrowed');
-        
         $this->db->execute();
-        return $this->db->rowCount();
+        
+        $rowCount = $this->db->rowCount();
+        
+        if ($rowCount > 0) {
+            // Decrement Stock & Increment Borrowed Count
+            $this->db->query('UPDATE books SET stock = stock - 1, borrowed_count = borrowed_count + 1 WHERE id = :id');
+            $this->db->bind('id', $bookId);
+            $this->db->execute();
+        }
+
+        return $rowCount;
+    }
+
+    public function getActiveLoanCount($userId)
+    {
+        $this->db->query('SELECT COUNT(*) as total FROM loans WHERE user_id = :user_id AND status != "returned"');
+        $this->db->bind('user_id', $userId);
+        return $this->db->single()['total'];
+    }
+
+    public function getBookStock($bookId)
+    {
+        $this->db->query('SELECT stock FROM books WHERE id = :id');
+        $this->db->bind('id', $bookId);
+        return $this->db->single()['stock'];
     }
 
     public function getLoansByUser($userId)
@@ -119,9 +153,21 @@ class Loan_model {
 
     public function returnLoan($id)
     {
+        $loan = $this->getLoanById($id);
+        
         $this->db->query('UPDATE loans SET status = "returned", return_date = CURDATE(), updated_at = CURRENT_TIMESTAMP WHERE id = :id');
         $this->db->bind('id', $id);
         $this->db->execute();
-        return $this->db->rowCount();
+        
+        $rowCount = $this->db->rowCount();
+        
+        if ($rowCount > 0) {
+            // Increment Stock
+            $this->db->query('UPDATE books SET stock = stock + 1 WHERE id = :id');
+            $this->db->bind('id', $loan['book_id']);
+            $this->db->execute();
+        }
+        
+        return $rowCount;
     }
 }

@@ -14,8 +14,21 @@ class Book extends Controller {
         $this->view('templates/footer', $data);
     }
 
+    public function liveSearch()
+    {
+        $keyword = isset($_GET['q']) ? $_GET['q'] : '';
+        if($keyword != '') {
+            $books = $this->model('Book_model')->searchBooks($keyword);
+            echo json_encode(['status' => 'success', 'data' => $books]);
+        } else {
+            echo json_encode(['status' => 'empty']);
+        }
+    }
+
     public function detail($id)
     {
+        $this->model('Book_model')->incrementViewsCount($id);
+        
         $data['judul'] = 'Detail Buku';
         $data['book'] = $this->model('Book_model')->getBookById($id);
         

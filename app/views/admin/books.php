@@ -21,6 +21,7 @@
                                 <th>Kategori</th>
                                 <th>Penerbit</th>
                                 <th>ISBN</th>
+                                <th>Stok</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -33,6 +34,13 @@
                                 <td><?= $book['category_name']; ?></td>
                                 <td><?= $book['publisher_name']; ?></td>
                                 <td><?= $book['isbn']; ?></td>
+                                <td>
+                                    <?php if($book['stock'] <= 0) : ?>
+                                        <span class="badge bg-danger">Habis</span>
+                                    <?php else : ?>
+                                        <span class="badge bg-success"><?= $book['stock']; ?></span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <button class="btn btn-sm btn-info me-2 viewPdfBtn" 
                                             onclick="window.open('<?= $book['pdf_link']; ?>', '_blank')">
@@ -48,7 +56,9 @@
                                             data-publisher="<?= $book['publisher_id']; ?>"
                                             data-isbn="<?= $book['isbn']; ?>"
                                             data-date="<?= $book['published_date']; ?>"
-                                            data-pdf="<?= $book['pdf_link']; ?>">
+                                            data-pdf="<?= $book['pdf_link']; ?>"
+                                            data-desc="<?= htmlspecialchars($book['description']); ?>"
+                                            data-stock="<?= $book['stock']; ?>">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                     <a href="<?= BASEURL; ?>/admin/deleteBook/<?= $book['id']; ?>" 
@@ -93,6 +103,12 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">Deskripsi / Sinopsis Buku</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Masukkan deskripsi buku"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="author_id" class="form-label">Penulis</label>
                             <select class="form-select" id="author_id" name="author_id" required>
@@ -130,6 +146,10 @@
                             <label for="pdf_link" class="form-label">Link PDF (Google Drive)</label>
                             <input type="url" class="form-control" id="pdf_link" name="pdf_link" placeholder="https://drive.google.com/...">
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label">Jumlah Stok</label>
+                            <input type="number" class="form-control" id="stock" name="stock" value="1" min="0" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -160,6 +180,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="edit-isbn" class="form-label">ISBN</label>
                             <input type="text" class="form-control" id="edit-isbn" name="isbn">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="edit-description" class="form-label">Deskripsi / Sinopsis Buku</label>
+                            <textarea class="form-control" id="edit-description" name="description" rows="3" placeholder="Masukkan deskripsi buku"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -197,6 +223,10 @@
                             <label for="edit-pdf_link" class="form-label">Link PDF (Google Drive)</label>
                             <input type="url" class="form-control" id="edit-pdf_link" name="pdf_link">
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-stock" class="form-label">Jumlah Stok</label>
+                            <input type="number" class="form-control" id="edit-stock" name="stock" min="0" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -219,6 +249,8 @@
             document.getElementById('edit-isbn').value = this.getAttribute('data-isbn');
             document.getElementById('edit-published_date').value = this.getAttribute('data-date');
             document.getElementById('edit-pdf_link').value = this.getAttribute('data-pdf');
+            document.getElementById('edit-description').value = this.getAttribute('data-desc');
+            document.getElementById('edit-stock').value = this.getAttribute('data-stock');
         });
     });
 </script>

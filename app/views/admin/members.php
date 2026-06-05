@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalId.value = this.getAttribute('data-id');
             modalUsername.value = this.getAttribute('data-username');
             modalEmail.value = this.getAttribute('data-email');
+            document.getElementById('modal-password').value = '';
         });
     });
 });
