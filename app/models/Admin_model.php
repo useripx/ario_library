@@ -132,51 +132,77 @@ class Admin_model {
     }
 
     // --- Books CRUD ---
-    public function getAllBooks()
+    public function getAllBooks($keyword = '')
     {
-        $this->db->query('SELECT b.*, a.name as author_name, c.name as category_name, p.name as publisher_name 
-                          FROM books b
-                          LEFT JOIN authors a ON b.author_id = a.id
-                          LEFT JOIN categories c ON b.category_id = c.id
-                          LEFT JOIN publishers p ON b.publisher_id = p.id
-                          ORDER BY b.created_at DESC');
+        $query = 'SELECT b.*, a.name as author_name, c.name as category_name, p.name as publisher_name 
+                  FROM books b
+                  LEFT JOIN authors a ON b.author_id = a.id
+                  LEFT JOIN categories c ON b.category_id = c.id
+                  LEFT JOIN publishers p ON b.publisher_id = p.id';
+
+        if (!empty($keyword)) {
+            $query .= ' WHERE b.title LIKE :keyword OR a.name LIKE :keyword OR p.name LIKE :keyword';
+        }
+
+        $query .= ' ORDER BY b.created_at DESC';
+
+        $this->db->query($query);
+
+        if (!empty($keyword)) {
+            $this->db->bind('keyword', "%$keyword%");
+        }
+
         return $this->db->resultSet();
     }
 
     public function addBook($data)
     {
-        $this->db->query('INSERT INTO books (title, author_id, category_id, publisher_id, isbn, published_date, pdf_link) 
-                          VALUES (:title, :author_id, :category_id, :publisher_id, :isbn, :published_date, :pdf_link)');
+        $this->db->query('INSERT INTO books (title, description, author_id, category_id, publisher_id, isbn, published_date, pdf_link, stock) 
+                          VALUES (:title, :description, :author_id, :category_id, :publisher_id, :isbn, :published_date, :pdf_link, :stock)');
         $this->db->bind('title', $data['title']);
+        $this->db->bind('description', $data['description']);
         $this->db->bind('author_id', $data['author_id']);
         $this->db->bind('category_id', $data['category_id']);
         $this->db->bind('publisher_id', $data['publisher_id']);
         $this->db->bind('isbn', $data['isbn']);
-        $this->db->bind('published_date', $data['published_date']);
+        $published_date = !empty($data['published_date']) ? $data['published_date'] : null;
+        $this->db->bind('published_date', $published_date);
         $this->db->bind('pdf_link', $data['pdf_link']);
+        $this->db->bind('stock', $data['stock']);
         $this->db->execute();
         return $this->db->rowCount();
     }
 
     public function updateBook($data)
     {
-        $this->db->query('UPDATE books SET title=:title, author_id=:author_id, category_id=:category_id, 
+        $this->db->query('UPDATE books SET title=:title, description=:description, author_id=:author_id, category_id=:category_id, 
                           publisher_id=:publisher_id, isbn=:isbn, published_date=:published_date, 
-                          pdf_link=:pdf_link, updated_at=CURRENT_TIMESTAMP WHERE id=:id');
+                          pdf_link=:pdf_link, stock=:stock, updated_at=CURRENT_TIMESTAMP WHERE id=:id');
         $this->db->bind('id', $data['id']);
         $this->db->bind('title', $data['title']);
+        $this->db->bind('description', $data['description']);
         $this->db->bind('author_id', $data['author_id']);
         $this->db->bind('category_id', $data['category_id']);
         $this->db->bind('publisher_id', $data['publisher_id']);
         $this->db->bind('isbn', $data['isbn']);
-        $this->db->bind('published_date', $data['published_date']);
+        $published_date = !empty($data['published_date']) ? $data['published_date'] : null;
+        $this->db->bind('published_date', $published_date);
         $this->db->bind('pdf_link', $data['pdf_link']);
+        $this->db->bind('stock', $data['stock']);
         $this->db->execute();
         return $this->db->rowCount();
     }
 
     public function deleteBook($id)
     {
+        $this->db->query('DELETE FROM wishlist WHERE book_id=:id');
+        $this->db->bind('id', $id);
+        $this->db->execute();
+
+        $this->db->query('DELETE FROM loans WHERE book_id=:id');
+        $this->db->bind('id', $id);
+        $this->db->execute();
+
         $this->db->query('DELETE FROM books WHERE id=:id');
         $this->db->bind('id', $id);
         $this->db->execute();
@@ -241,12 +267,27 @@ class Admin_model {
     {
         $returnDate = ($status == 'returned') ? date('Y-m-d') : null;
         
+        // Get loan info to find book_id
+        $this->db->query('SELECT book_id FROM loans WHERE id = :id');
+        $this->db->bind('id', $id);
+        $loan = $this->db->single();
+
         $this->db->query('UPDATE loans SET status=:status, return_date=:return_date, updated_at=CURRENT_TIMESTAMP WHERE id=:id');
         $this->db->bind('id', $id);
         $this->db->bind('status', $status);
         $this->db->bind('return_date', $returnDate);
         $this->db->execute();
-        return $this->db->rowCount();
+        
+        $rowCount = $this->db->rowCount();
+
+        if ($rowCount > 0 && $status == 'returned') {
+            // Increment Stock
+            $this->db->query('UPDATE books SET stock = stock + 1 WHERE id = :id');
+            $this->db->bind('id', $loan['book_id']);
+            $this->db->execute();
+        }
+
+        return $rowCount;
     }
 
     // --- Member (User) Management ---
@@ -258,8 +299,8 @@ class Admin_model {
 
     public function updateUser($data)
     {
-        if (!empty($data['password'])) {
-            $password = password_hash($data['password'], PASSWORD_DEFAULT);
+        if (!empty(trim($data['password']))) {
+            $password = password_hash(trim($data['password']), PASSWORD_DEFAULT);
             $this->db->query('UPDATE users SET username=:username, email=:email, password=:password, updated_at=CURRENT_TIMESTAMP WHERE id=:id');
             $this->db->bind('password', $password);
         } else {

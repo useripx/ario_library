@@ -2,9 +2,15 @@
     <div class="row pt-4">
         <div class="col-12 d-flex justify-content-between align-items-center mb-4">
             <h2>Kelola Buku</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
-                <i class="fa fa-plus me-2"></i> Tambah Buku
-            </button>
+            <div class="d-flex">
+                <form action="<?= BASEURL; ?>/admin/books" method="GET" class="d-flex me-2">
+                    <input type="text" name="q" class="form-control me-2" placeholder="Cari judul/penulis/penerbit..." value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+                    <button type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </form>
+                <button class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                    <i class="fa fa-plus me-2"></i> Tambah Buku
+                </button>
+            </div>
         </div>
     </div>
 
@@ -21,6 +27,7 @@
                                 <th>Kategori</th>
                                 <th>Penerbit</th>
                                 <th>ISBN</th>
+                                <th>Stok</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -34,28 +41,39 @@
                                 <td><?= $book['publisher_name']; ?></td>
                                 <td><?= $book['isbn']; ?></td>
                                 <td>
-                                    <button class="btn btn-sm btn-info me-2 viewPdfBtn" 
-                                            onclick="window.open('<?= $book['pdf_link']; ?>', '_blank')">
-                                        <i class="fa fa-file-pdf"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning me-2 editBookBtn" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editBookModal"
-                                            data-id="<?= $book['id']; ?>"
-                                            data-title="<?= $book['title']; ?>"
-                                            data-author="<?= $book['author_id']; ?>"
-                                            data-category="<?= $book['category_id']; ?>"
-                                            data-publisher="<?= $book['publisher_id']; ?>"
-                                            data-isbn="<?= $book['isbn']; ?>"
-                                            data-date="<?= $book['published_date']; ?>"
-                                            data-pdf="<?= $book['pdf_link']; ?>">
-                                        <i class="fa fa-edit"></i>
-                                    </button>
-                                    <a href="<?= BASEURL; ?>/admin/deleteBook/<?= $book['id']; ?>" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
+                                    <?php if($book['stock'] <= 0) : ?>
+                                        <span class="badge bg-danger">Habis</span>
+                                    <?php else : ?>
+                                        <span class="badge bg-success"><?= $book['stock']; ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-info viewPdfBtn" 
+                                                onclick="window.open('<?= $book['pdf_link']; ?>', '_blank')" title="Lihat PDF">
+                                            <i class="fa fa-file-pdf"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning editBookBtn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editBookModal"
+                                                data-id="<?= $book['id']; ?>"
+                                                data-title="<?= $book['title']; ?>"
+                                                data-author="<?= $book['author_id']; ?>"
+                                                data-category="<?= $book['category_id']; ?>"
+                                                data-publisher="<?= $book['publisher_id']; ?>"
+                                                data-isbn="<?= $book['isbn']; ?>"
+                                                data-date="<?= $book['published_date']; ?>"
+                                                data-pdf="<?= $book['pdf_link']; ?>"
+                                                data-desc="<?= htmlspecialchars($book['description']); ?>"
+                                                data-stock="<?= $book['stock']; ?>" title="Edit Buku">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <a href="<?= BASEURL; ?>/admin/deleteBook/<?= $book['id']; ?>" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')" title="Hapus Buku">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -90,6 +108,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="isbn" class="form-label">ISBN</label>
                             <input type="text" class="form-control" id="isbn" name="isbn">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">Deskripsi / Sinopsis Buku</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Masukkan deskripsi buku"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -130,6 +154,10 @@
                             <label for="pdf_link" class="form-label">Link PDF (Google Drive)</label>
                             <input type="url" class="form-control" id="pdf_link" name="pdf_link" placeholder="https://drive.google.com/...">
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label">Jumlah Stok</label>
+                            <input type="number" class="form-control" id="stock" name="stock" value="1" min="0" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -160,6 +188,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="edit-isbn" class="form-label">ISBN</label>
                             <input type="text" class="form-control" id="edit-isbn" name="isbn">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="edit-description" class="form-label">Deskripsi / Sinopsis Buku</label>
+                            <textarea class="form-control" id="edit-description" name="description" rows="3" placeholder="Masukkan deskripsi buku"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -197,6 +231,10 @@
                             <label for="edit-pdf_link" class="form-label">Link PDF (Google Drive)</label>
                             <input type="url" class="form-control" id="edit-pdf_link" name="pdf_link">
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-stock" class="form-label">Jumlah Stok</label>
+                            <input type="number" class="form-control" id="edit-stock" name="stock" min="0" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -219,6 +257,8 @@
             document.getElementById('edit-isbn').value = this.getAttribute('data-isbn');
             document.getElementById('edit-published_date').value = this.getAttribute('data-date');
             document.getElementById('edit-pdf_link').value = this.getAttribute('data-pdf');
+            document.getElementById('edit-description').value = this.getAttribute('data-desc');
+            document.getElementById('edit-stock').value = this.getAttribute('data-stock');
         });
     });
 </script>

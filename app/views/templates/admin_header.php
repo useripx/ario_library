@@ -100,6 +100,10 @@
             <a href="<?= BASEURL; ?>/admin/publishers" class="nav-link <?= ($data['judul'] == 'Penerbit') ? 'active' : ''; ?>">
                 <i class="fa fa-print me-2"></i> Penerbit
             </a>
+            <a href="<?= BASEURL; ?>/admin/masukan" class="nav-link <?= ($data['judul'] == 'Daftar Masukan Pengguna') ? 'active' : ''; ?>">
+                <i class="fa fa-envelope-open-text me-2"></i> Masukan
+                <span class="badge bg-danger rounded-pill float-end unread-count-badge d-none">0</span>
+            </a>
             <?php if ($_SESSION['role'] == 'super_admin') : ?>
             <a href="<?= BASEURL; ?>/admin/staff" class="nav-link <?= ($data['judul'] == 'Admin Cabang') ? 'active' : ''; ?>">
                 <i class="fa fa-users-cog me-2"></i> Admin Cabang

@@ -11,37 +11,41 @@
                     <a class="btn btn-link" href="">FAQs & Help</a>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    <h4 class="text-white mb-3">Pusat Dukungan</h4>
+                    <p class="mb-2">Kami di Ario Library siap melayani pertanyaan, keluhan, maupun masukan berharga dari Anda untuk terus meningkatkan kualitas literasi digital.</p>
+                    <div class="d-flex p-2 bg-primary rounded my-3">
+                        <i class="fa fa-clock fa-2x text-white mb-0 me-3 mt-1"></i>
+                        <div>
+                            <p class="text-white mb-0">Senin - Jumat</p>
+                            <h6 class="text-white mb-0">08:00 - 16:00</h6>
+                        </div>
                     </div>
+                    <?php if (isset($_SESSION['user_id'])) : ?>
+                        <a href="<?= BASEURL; ?>/customerservice" class="btn btn-outline-light w-100 py-2"><i class="fa fa-envelope-open-text me-2"></i> Hubungi Customer Service</a>
+                    <?php else: ?>
+                        <a href="<?= BASEURL; ?>/auth" class="btn btn-outline-light w-100 py-2"><i class="fa fa-sign-in-alt me-2"></i> Login untuk Tanya Admin</a>
+                    <?php endif; ?>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Gallery</h4>
                     <div class="row g-2 pt-2">
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-1.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-2.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-3.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-2.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-3.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-1.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                     </div>
                 </div>
@@ -128,6 +132,24 @@
     });
     </script>
     <?php endif; ?>
+
+    <?php if (isset($_SESSION['auto_return_alert']) && !empty($_SESSION['auto_return_alert'])) : ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    $(document).ready(function() {
+        let books = <?= json_encode($_SESSION['auto_return_alert']); ?>;
+        let bookTitles = books.join(", ");
+        Swal.fire({
+            title: 'Pengembalian Otomatis',
+            text: 'Buku yang Anda pinjam "' + bookTitles + '" telah dikembalikan otomatis oleh sistem karena masa peminjaman telah berakhir lebih dari 15 hari. Silakan melakukan peminjaman ulang.',
+            icon: 'info',
+            confirmButtonText: 'Tutup'
+        });
+    });
+    </script>
+    <?php unset($_SESSION['auto_return_alert']); endif; ?>
+
+    <?php Flasher::flash(); ?>
 </body>
 
 </html>

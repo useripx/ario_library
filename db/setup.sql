@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS authors (
 -- Table Categories
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -50,13 +50,19 @@ CREATE TABLE IF NOT EXISTS publishers (
 CREATE TABLE IF NOT EXISTS books (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    description TEXT,
     author_id INT,
     category_id INT,
     publisher_id INT,
     isbn VARCHAR(20),
     published_date DATE,
     pdf_link VARCHAR(255),
+    stock INT DEFAULT 5,
+    views_count INT DEFAULT 0,
+    borrowed_count INT DEFAULT 0,
     is_available BOOLEAN DEFAULT TRUE,
+    drive_file_id VARCHAR(255) UNIQUE,
+    status_entri ENUM('draft', 'published') DEFAULT 'draft',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES authors(id),
@@ -90,7 +96,25 @@ CREATE TABLE IF NOT EXISTS wishlist (
     FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
+-- Table Messages
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    reply TEXT,
+    status ENUM('unread', 'read', 'replied') DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 -- Seed Admin
 -- Password 'admin'
-INSERT INTO admin (username, password, role) 
-VALUES ('admin', '$2y$12$Uj4tZ5rVXYhU2IZWEJtjs.7WIPIF00Fjc9.nLqik6teKChbZ2fMOC', 'super_admin');
+INSERT IGNORE INTO admin (id, username, password, role) 
+VALUES (1, 'admin', '$2y$12$Uj4tZ5rVXYhU2IZWEJtjs.7WIPIF00Fjc9.nLqik6teKChbZ2fMOC', 'super_admin');
+
+-- Seed User (Member)
+-- Password 'user'
+INSERT IGNORE INTO users (id, username, email, password)
+VALUES (1, 'user', 'user@gmail.com', '$2y$12$nuHRt5dZ2BMmoUXaCVCCc.PyqwSZaNrdUQR4RB0FyOxkU60LWQvay');

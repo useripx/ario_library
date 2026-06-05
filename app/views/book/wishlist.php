@@ -10,7 +10,7 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="course-item bg-light shadow-sm">
                     <div class="position-relative overflow-hidden">
-                        <img class="img-fluid" src="<?= BASEURL; ?>/img/course-1.jpg" alt="">
+                        <img class="img-fluid" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
                             <a href="<?= BASEURL; ?>/book/detail/<?= $book['id']; ?>" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Detail</a>
                             <a href="<?= BASEURL; ?>/book/toggleWishlist/<?= $book['id']; ?>" class="flex-shrink-0 btn btn-sm btn-danger px-3 text-white" style="border-radius: 0 30px 30px 0;"><i class="fa fa-heart"></i></a>

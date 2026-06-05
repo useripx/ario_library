@@ -30,6 +30,8 @@
     <!-- Template Stylesheet -->
     <link href="<?= BASEURL; ?>/css/style.css" rel="stylesheet">
     <link href="<?= BASEURL; ?>/css/logout.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -59,7 +61,13 @@
                     <a href="<?= BASEURL; ?>/loan" class="nav-item nav-link <?= ($data['judul'] == 'Pinjaman Saya') ? 'active' : ''; ?>">Pinjaman Saya</a>
                 <?php endif; ?>
 
-                <a href="<?= BASEURL; ?>/contact" class="nav-item nav-link <?= ($data['judul'] == 'Contact') ? 'active' : ''; ?>">Contact</a>
+                <div class="nav-item position-relative d-flex align-items-center me-3 mt-3 mt-lg-0">
+                    <div class="input-group">
+                        <input type="text" id="liveSearchInput" class="form-control rounded-pill px-4" placeholder="Ketik judul buku..." style="min-width: 250px;">
+                    </div>
+                    <div id="liveSearchResults" class="dropdown-menu shadow w-100 border-0 p-2 position-absolute top-100 start-0 mt-2 d-none" style="max-height: 400px; overflow-y: auto; z-index: 1050;">
+                    </div>
+                </div>
             </div>
 
             <?php if(isset($_SESSION['admin_id'])) : ?>
@@ -124,3 +132,60 @@
         </div>
     </nav>
     <!-- Navbar End -->
+
+    <!-- Live Search Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('liveSearchInput');
+        const searchResults = document.getElementById('liveSearchResults');
+        
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                searchResults.classList.add('d-none');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch('<?= BASEURL; ?>/book/liveSearch?q=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        searchResults.classList.remove('d-none');
+                        
+                        if (data.status === 'success' && data.data.length > 0) {
+                            data.data.forEach(book => {
+                                const author = book.author_name ? `<small class="text-muted d-block">${book.author_name}</small>` : '';
+                                searchResults.innerHTML += `
+                                    <a href="<?= BASEURL; ?>/book/detail/${book.id}" class="dropdown-item py-2 border-bottom text-wrap">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-book text-primary me-3"></i>
+                                            <div>
+                                                <span class="d-block fw-bold">${book.title}</span>
+                                                ${author}
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                        } else {
+                            searchResults.innerHTML = '<div class="dropdown-item text-muted text-wrap text-center py-3"><i class="fa fa-search-minus mb-2 fs-4 d-block"></i> Buku tidak ditemukan</div>';
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }, 300); // 300ms debounce
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.add('d-none');
+            }
+        });
+    });
+    </script>
+

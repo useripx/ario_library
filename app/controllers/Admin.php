@@ -44,6 +44,9 @@ class Admin extends Controller {
         if ($this->model('Admin_model')->updateCategory($_POST) > 0) {
             header('Location: ' . BASEURL . '/admin/categories');
             exit;
+        } else {
+            header('Location: ' . BASEURL . '/admin/categories');
+            exit;
         }
     }
 
@@ -77,6 +80,9 @@ class Admin extends Controller {
     public function editAuthor()
     {
         if ($this->model('Admin_model')->updateAuthor($_POST) > 0) {
+            header('Location: ' . BASEURL . '/admin/authors');
+            exit;
+        } else {
             header('Location: ' . BASEURL . '/admin/authors');
             exit;
         }
@@ -114,6 +120,9 @@ class Admin extends Controller {
         if ($this->model('Admin_model')->updatePublisher($_POST) > 0) {
             header('Location: ' . BASEURL . '/admin/publishers');
             exit;
+        } else {
+            header('Location: ' . BASEURL . '/admin/publishers');
+            exit;
         }
     }
 
@@ -129,7 +138,8 @@ class Admin extends Controller {
     public function books()
     {
         $data['judul'] = 'Kelola Buku';
-        $data['books'] = $this->model('Admin_model')->getAllBooks();
+        $keyword = isset($_GET['q']) ? $_GET['q'] : '';
+        $data['books'] = $this->model('Admin_model')->getAllBooks($keyword);
         $data['categories'] = $this->model('Admin_model')->getAllCategories();
         $data['authors'] = $this->model('Admin_model')->getAllAuthors();
         $data['publishers'] = $this->model('Admin_model')->getAllPublishers();
@@ -150,6 +160,9 @@ class Admin extends Controller {
     public function editBook()
     {
         if ($this->model('Admin_model')->updateBook($_POST) > 0) {
+            header('Location: ' . BASEURL . '/admin/books');
+            exit;
+        } else {
             header('Location: ' . BASEURL . '/admin/books');
             exit;
         }
@@ -227,6 +240,33 @@ class Admin extends Controller {
             header('Location: ' . BASEURL . '/admin/sirkulasi');
             exit;
         }
+    }
+
+    // --- Layanan Masukan (Customer Service) ---
+    public function masukan()
+    {
+        $data['judul'] = 'Daftar Masukan Pengguna';
+        $data['messages'] = $this->model('Message_model')->getAllMessages();
+        
+        $this->view('templates/admin_header', $data);
+        $this->view('admin/masukan', $data);
+        $this->view('templates/admin_footer', $data);
+    }
+
+    public function replyMasukan()
+    {
+        if (isset($_POST['id']) && isset($_POST['reply'])) {
+            $this->model('Message_model')->replyMessage($_POST['id'], $_POST['reply']);
+        }
+        header('Location: ' . BASEURL . '/admin/masukan');
+        exit;
+    }
+
+    public function markMessageRead($id)
+    {
+        $this->model('Message_model')->markAsRead($id);
+        header('Location: ' . BASEURL . '/admin/masukan');
+        exit;
     }
 
     // --- Member (User) Management ---
