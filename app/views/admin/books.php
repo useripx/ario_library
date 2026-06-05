@@ -47,31 +47,33 @@
                                         <span class="badge bg-success"><?= $book['stock']; ?></span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
-                                    <button class="btn btn-sm btn-info me-2 viewPdfBtn" 
-                                            onclick="window.open('<?= $book['pdf_link']; ?>', '_blank')">
-                                        <i class="fa fa-file-pdf"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning me-2 editBookBtn" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editBookModal"
-                                            data-id="<?= $book['id']; ?>"
-                                            data-title="<?= $book['title']; ?>"
-                                            data-author="<?= $book['author_id']; ?>"
-                                            data-category="<?= $book['category_id']; ?>"
-                                            data-publisher="<?= $book['publisher_id']; ?>"
-                                            data-isbn="<?= $book['isbn']; ?>"
-                                            data-date="<?= $book['published_date']; ?>"
-                                            data-pdf="<?= $book['pdf_link']; ?>"
-                                            data-desc="<?= htmlspecialchars($book['description']); ?>"
-                                            data-stock="<?= $book['stock']; ?>">
-                                        <i class="fa fa-edit"></i>
-                                    </button>
-                                    <a href="<?= BASEURL; ?>/admin/deleteBook/<?= $book['id']; ?>" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
+                                <td style="white-space: nowrap;">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-info viewPdfBtn" 
+                                                onclick="window.open('<?= $book['pdf_link']; ?>', '_blank')" title="Lihat PDF">
+                                            <i class="fa fa-file-pdf"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning editBookBtn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editBookModal"
+                                                data-id="<?= $book['id']; ?>"
+                                                data-title="<?= $book['title']; ?>"
+                                                data-author="<?= $book['author_id']; ?>"
+                                                data-category="<?= $book['category_id']; ?>"
+                                                data-publisher="<?= $book['publisher_id']; ?>"
+                                                data-isbn="<?= $book['isbn']; ?>"
+                                                data-date="<?= $book['published_date']; ?>"
+                                                data-pdf="<?= $book['pdf_link']; ?>"
+                                                data-desc="<?= htmlspecialchars($book['description']); ?>"
+                                                data-stock="<?= $book['stock']; ?>" title="Edit Buku">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <a href="<?= BASEURL; ?>/admin/deleteBook/<?= $book['id']; ?>" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')" title="Hapus Buku">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

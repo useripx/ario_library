@@ -8,7 +8,7 @@
             </div>
             <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
                 <h6 class="section-title bg-white text-start text-primary pe-3">Detail Buku</h6>
-                <h1 class="mb-4"><?= $data['book']['title']; ?></h1>
+                <h1 class="mb-4" style="word-break: break-word;"><?= $data['book']['title']; ?></h1>
                 
                 <div class="row mb-4">
                     <div class="col-md-6">

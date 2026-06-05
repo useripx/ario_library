@@ -36,7 +36,7 @@
                         </div>
                     </div>
                     <div class="text-center p-4 pb-0">
-                        <h5 class="mb-2"><?= $book['title']; ?></h5>
+                        <h5 class="mb-2" style="word-break: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="<?= $book['title']; ?>"><?= $book['title']; ?></h5>
                         <p class="mb-1 text-muted small"><i class="fa fa-user me-2"></i><?= $book['author_name']; ?></p>
                         <p class="text-primary fw-bold"><?= $book['category_name']; ?></p>
                     </div>
@@ -72,11 +72,26 @@
                             </a>
                         </li>
                         
-                        <?php for($i = 1; $i <= $data['total_pages']; $i++) : ?>
+                        <?php 
+                        $startPage = max(1, $data['current_page'] - 2);
+                        $endPage = min($data['total_pages'], $data['current_page'] + 2);
+                        
+                        if ($startPage > 1) {
+                            echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                        }
+                        ?>
+                        
+                        <?php for($i = $startPage; $i <= $endPage; $i++) : ?>
                         <li class="page-item <?= $data['current_page'] == $i ? 'active' : ''; ?>">
                             <a class="page-link" href="<?= BASEURL; ?>/book?page=<?= $i . $limStr . $qStr; ?>"><?= $i; ?></a>
                         </li>
                         <?php endfor; ?>
+                        
+                        <?php 
+                        if ($endPage < $data['total_pages']) {
+                            echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                        }
+                        ?>
                         
                         <li class="page-item <?= $data['current_page'] >= $data['total_pages'] ? 'disabled' : ''; ?>">
                             <a class="page-link" href="<?= BASEURL; ?>/book?page=<?= $next . $limStr . $qStr; ?>" aria-label="Next">

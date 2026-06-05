@@ -195,6 +195,10 @@ class Admin_model {
 
     public function deleteBook($id)
     {
+        $this->db->query('DELETE FROM wishlist WHERE book_id=:id');
+        $this->db->bind('id', $id);
+        $this->db->execute();
+
         $this->db->query('DELETE FROM loans WHERE book_id=:id');
         $this->db->bind('id', $id);
         $this->db->execute();
