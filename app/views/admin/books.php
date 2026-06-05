@@ -2,9 +2,15 @@
     <div class="row pt-4">
         <div class="col-12 d-flex justify-content-between align-items-center mb-4">
             <h2>Kelola Buku</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
-                <i class="fa fa-plus me-2"></i> Tambah Buku
-            </button>
+            <div class="d-flex">
+                <form action="<?= BASEURL; ?>/admin/books" method="GET" class="d-flex me-2">
+                    <input type="text" name="q" class="form-control me-2" placeholder="Cari judul/penulis/penerbit..." value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+                    <button type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </form>
+                <button class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                    <i class="fa fa-plus me-2"></i> Tambah Buku
+                </button>
+            </div>
         </div>
     </div>
 

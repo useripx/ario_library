@@ -43,15 +43,50 @@ class Book_model {
         return $this->db->single();
     }
 
-    public function searchBooks($keyword)
+    public function getBooksPaginated($limit, $offset, $keyword = '')
     {
-        $this->db->query('SELECT b.*, a.name as author_name, c.name as category_name 
-                          FROM books b
-                          LEFT JOIN authors a ON b.author_id = a.id
-                          LEFT JOIN categories c ON b.category_id = c.id
-                          WHERE b.title LIKE :keyword OR a.name LIKE :keyword OR c.name LIKE :keyword');
-        $this->db->bind('keyword', "%$keyword%");
+        $query = 'SELECT b.*, a.name as author_name, c.name as category_name 
+                  FROM books b
+                  LEFT JOIN authors a ON b.author_id = a.id
+                  LEFT JOIN categories c ON b.category_id = c.id
+                  WHERE b.is_available = 1';
+        
+        if (!empty($keyword)) {
+            $query .= ' AND (b.title LIKE :keyword OR a.name LIKE :keyword OR c.name LIKE :keyword)';
+        }
+
+        $query .= ' ORDER BY b.created_at DESC LIMIT :limit OFFSET :offset';
+
+        $this->db->query($query);
+
+        if (!empty($keyword)) {
+            $this->db->bind('keyword', "%$keyword%");
+        }
+        $this->db->bind('limit', (int)$limit);
+        $this->db->bind('offset', (int)$offset);
+
         return $this->db->resultSet();
+    }
+
+    public function getTotalBooks($keyword = '')
+    {
+        $query = 'SELECT COUNT(*) as total 
+                  FROM books b
+                  LEFT JOIN authors a ON b.author_id = a.id
+                  LEFT JOIN categories c ON b.category_id = c.id
+                  WHERE b.is_available = 1';
+        
+        if (!empty($keyword)) {
+            $query .= ' AND (b.title LIKE :keyword OR a.name LIKE :keyword OR c.name LIKE :keyword)';
+        }
+
+        $this->db->query($query);
+
+        if (!empty($keyword)) {
+            $this->db->bind('keyword', "%$keyword%");
+        }
+
+        return $this->db->single()['total'];
     }
 
     public function getCategories()

@@ -138,7 +138,8 @@ class Admin extends Controller {
     public function books()
     {
         $data['judul'] = 'Kelola Buku';
-        $data['books'] = $this->model('Admin_model')->getAllBooks();
+        $keyword = isset($_GET['q']) ? $_GET['q'] : '';
+        $data['books'] = $this->model('Admin_model')->getAllBooks($keyword);
         $data['categories'] = $this->model('Admin_model')->getAllCategories();
         $data['authors'] = $this->model('Admin_model')->getAllAuthors();
         $data['publishers'] = $this->model('Admin_model')->getAllPublishers();

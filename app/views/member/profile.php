@@ -105,6 +105,26 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
+
+<?php if (isset($data['overdue_count']) && $data['overdue_count'] > 0) : ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: "Peringatan!",
+            text: "Anda memiliki <?= $data['overdue_count']; ?> pinjaman buku yang sudah lewat batas waktu (kedaluwarsa). Silakan kembalikan buku tersebut terlebih dahulu.",
+            icon: "warning",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showCancelButton: false,
+            confirmButtonText: "Buka Halaman Pinjaman",
+            confirmButtonColor: "#d33"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?= BASEURL; ?>/loan";
+            }
+        });
+    });
+</script>
+<?php endif; ?>

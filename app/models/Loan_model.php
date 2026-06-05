@@ -170,4 +170,31 @@ class Loan_model {
         
         return $rowCount;
     }
+
+    public function processAutoReturn($userId)
+    {
+        $this->db->query("SELECT l.id, b.title, l.book_id FROM loans l JOIN books b ON l.book_id = b.id WHERE l.user_id = :user_id AND l.status != 'returned' AND DATEDIFF(CURDATE(), l.due_date) > 15");
+        $this->db->bind('user_id', $userId);
+        $overdueLoans = $this->db->resultSet();
+
+        if (empty($overdueLoans)) {
+            return [];
+        }
+
+        $returnedTitles = [];
+        foreach ($overdueLoans as $loan) {
+            $this->db->query('UPDATE loans SET status = "returned", return_date = CURDATE(), updated_at = CURRENT_TIMESTAMP WHERE id = :id');
+            $this->db->bind('id', $loan['id']);
+            $this->db->execute();
+            
+            if ($this->db->rowCount() > 0) {
+                $this->db->query('UPDATE books SET stock = stock + 1 WHERE id = :id');
+                $this->db->bind('id', $loan['book_id']);
+                $this->db->execute();
+                
+                $returnedTitles[] = $loan['title'];
+            }
+        }
+        return $returnedTitles;
+    }
 }

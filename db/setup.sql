@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS authors (
 -- Table Categories
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -61,6 +61,8 @@ CREATE TABLE IF NOT EXISTS books (
     views_count INT DEFAULT 0,
     borrowed_count INT DEFAULT 0,
     is_available BOOLEAN DEFAULT TRUE,
+    drive_file_id VARCHAR(255) UNIQUE,
+    status_entri ENUM('draft', 'published') DEFAULT 'draft',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES authors(id),

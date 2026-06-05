@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Pusat Dukungan</h4>
-                    <p class="mb-2">Kami di **Ario Library** siap melayani pertanyaan, keluhan, maupun masukan berharga dari Anda untuk terus meningkatkan kualitas literasi digital.</p>
+                    <p class="mb-2">Kami di Ario Library siap melayani pertanyaan, keluhan, maupun masukan berharga dari Anda untuk terus meningkatkan kualitas literasi digital.</p>
                     <div class="d-flex p-2 bg-primary rounded my-3">
                         <i class="fa fa-clock fa-2x text-white mb-0 me-3 mt-1"></i>
                         <div>
@@ -30,22 +30,22 @@
                     <h4 class="text-white mb-3">Gallery</h4>
                     <div class="row g-2 pt-2">
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-1.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-2.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-3.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-2.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-3.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                         <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/course-1.jpg" alt="">
+                            <img class="img-fluid bg-light p-1" src="<?= BASEURL; ?>/img/cover.jpg" alt="">
                         </div>
                     </div>
                 </div>
@@ -132,6 +132,23 @@
     });
     </script>
     <?php endif; ?>
+
+    <?php if (isset($_SESSION['auto_return_alert']) && !empty($_SESSION['auto_return_alert'])) : ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    $(document).ready(function() {
+        let books = <?= json_encode($_SESSION['auto_return_alert']); ?>;
+        let bookTitles = books.join(", ");
+        Swal.fire({
+            title: 'Pengembalian Otomatis',
+            text: 'Buku yang Anda pinjam "' + bookTitles + '" telah dikembalikan otomatis oleh sistem karena masa peminjaman telah berakhir lebih dari 15 hari. Silakan melakukan peminjaman ulang.',
+            icon: 'info',
+            confirmButtonText: 'Tutup'
+        });
+    });
+    </script>
+    <?php unset($_SESSION['auto_return_alert']); endif; ?>
+
     <?php Flasher::flash(); ?>
 </body>
 

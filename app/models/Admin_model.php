@@ -132,14 +132,26 @@ class Admin_model {
     }
 
     // --- Books CRUD ---
-    public function getAllBooks()
+    public function getAllBooks($keyword = '')
     {
-        $this->db->query('SELECT b.*, a.name as author_name, c.name as category_name, p.name as publisher_name 
-                          FROM books b
-                          LEFT JOIN authors a ON b.author_id = a.id
-                          LEFT JOIN categories c ON b.category_id = c.id
-                          LEFT JOIN publishers p ON b.publisher_id = p.id
-                          ORDER BY b.created_at DESC');
+        $query = 'SELECT b.*, a.name as author_name, c.name as category_name, p.name as publisher_name 
+                  FROM books b
+                  LEFT JOIN authors a ON b.author_id = a.id
+                  LEFT JOIN categories c ON b.category_id = c.id
+                  LEFT JOIN publishers p ON b.publisher_id = p.id';
+
+        if (!empty($keyword)) {
+            $query .= ' WHERE b.title LIKE :keyword OR a.name LIKE :keyword OR p.name LIKE :keyword';
+        }
+
+        $query .= ' ORDER BY b.created_at DESC';
+
+        $this->db->query($query);
+
+        if (!empty($keyword)) {
+            $this->db->bind('keyword', "%$keyword%");
+        }
+
         return $this->db->resultSet();
     }
 
@@ -153,7 +165,8 @@ class Admin_model {
         $this->db->bind('category_id', $data['category_id']);
         $this->db->bind('publisher_id', $data['publisher_id']);
         $this->db->bind('isbn', $data['isbn']);
-        $this->db->bind('published_date', $data['published_date']);
+        $published_date = !empty($data['published_date']) ? $data['published_date'] : null;
+        $this->db->bind('published_date', $published_date);
         $this->db->bind('pdf_link', $data['pdf_link']);
         $this->db->bind('stock', $data['stock']);
         $this->db->execute();
@@ -172,7 +185,8 @@ class Admin_model {
         $this->db->bind('category_id', $data['category_id']);
         $this->db->bind('publisher_id', $data['publisher_id']);
         $this->db->bind('isbn', $data['isbn']);
-        $this->db->bind('published_date', $data['published_date']);
+        $published_date = !empty($data['published_date']) ? $data['published_date'] : null;
+        $this->db->bind('published_date', $published_date);
         $this->db->bind('pdf_link', $data['pdf_link']);
         $this->db->bind('stock', $data['stock']);
         $this->db->execute();
@@ -181,6 +195,10 @@ class Admin_model {
 
     public function deleteBook($id)
     {
+        $this->db->query('DELETE FROM loans WHERE book_id=:id');
+        $this->db->bind('id', $id);
+        $this->db->execute();
+
         $this->db->query('DELETE FROM books WHERE id=:id');
         $this->db->bind('id', $id);
         $this->db->execute();

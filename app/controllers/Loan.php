@@ -8,6 +8,11 @@ class Loan extends Controller {
             header('Location: ' . BASEURL . '/auth');
             exit;
         }
+
+        $autoReturned = $this->model('Loan_model')->processAutoReturn($_SESSION['user_id']);
+        if (!empty($autoReturned)) {
+            $_SESSION['auto_return_alert'] = $autoReturned;
+        }
     }
 
     public function index()

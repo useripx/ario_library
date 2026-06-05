@@ -3,7 +3,7 @@
         <div class="row g-5">
             <div class="col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="position-relative">
-                    <img class="img-fluid w-100 shadow rounded" src="<?= BASEURL; ?>/img/course-1.jpg" alt="<?= $data['book']['title']; ?>">
+                    <img class="img-fluid w-100 shadow rounded" src="<?= BASEURL; ?>/img/cover.jpg" alt="<?= $data['book']['title']; ?>">
                 </div>
             </div>
             <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">

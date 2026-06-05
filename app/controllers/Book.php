@@ -1,13 +1,35 @@
 <?php
 
 class Book extends Controller {
+    public function __construct()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $autoReturned = $this->model('Loan_model')->processAutoReturn($_SESSION['user_id']);
+            if (!empty($autoReturned)) {
+                $_SESSION['auto_return_alert'] = $autoReturned;
+            }
+        }
+    }
+
     public function index()
     {
         $data['judul'] = 'Koleksi Buku';
-        $data['books'] = $this->model('Book_model')->getAllBooks();
-        if (isset($_POST['keyword'])) {
-            $data['books'] = $this->model('Book_model')->searchBooks($_POST['keyword']);
-        }
+        
+        $keyword = isset($_GET['q']) ? $_GET['q'] : '';
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        
+        if ($page < 1) $page = 1;
+        
+        $offset = ($page - 1) * $limit;
+        
+        $data['books'] = $this->model('Book_model')->getBooksPaginated($limit, $offset, $keyword);
+        $totalBooks = $this->model('Book_model')->getTotalBooks($keyword);
+        
+        $data['total_pages'] = ceil($totalBooks / $limit);
+        $data['current_page'] = $page;
+        $data['limit'] = $limit;
+        $data['keyword'] = $keyword;
         
         $this->view('templates/header', $data);
         $this->view('book/index', $data);
@@ -58,6 +80,13 @@ class Book extends Controller {
         // Security: must belong to the user
         if ($loan['user_id'] != $_SESSION['user_id']) {
             header('Location: ' . BASEURL . '/home');
+            exit;
+        }
+
+        // Security: Overdue check
+        if (strtotime($loan['due_date']) < strtotime(date('Y-m-d')) && $loan['status'] != 'returned') {
+            Flasher::setFlash('Batas waktu peminjaman buku ini telah habis. Silakan kembalikan buku terlebih dahulu jika Anda ingin meminjam ulang.', 'Akses Ditolak!', 'error');
+            header('Location: ' . BASEURL . '/loan');
             exit;
         }
 
