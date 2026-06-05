@@ -20,7 +20,7 @@ Hai! Berikut adalah tutorial step-by-step lengkap yang bisa kamu ikuti untuk men
 
 ```javascript
 // Ganti ID di bawah dengan Folder ID yang kamu dapatkan dari Langkah Persiapan!
-const ROOT_FOLDER_ID = 'MASUKKAN_FOLDER_ID_KAMU_DISINI'; 
+const ROOT_FOLDER_ID = '1S08dlu_Aee-j6OVrZafGk3elhXc6WqP_'; 
 
 // URL Webhook Ngrok kamu (tidak perlu diubah lagi jika ngrok jalan terus)
 const WEBHOOK_URL = 'https://yam-charter-rimless.ngrok-free.dev/api/bot_sync';
@@ -54,6 +54,13 @@ function scanLibrary() {
           file_id: fileId
         });
       
+        // (BARU) Mengunci fitur Download, Print, Copy untuk file yang baru diupload
+        try {
+          Drive.Files.update({copyRequiresWriterPermission: true}, fileId);
+        } catch (e) {
+          // Abaikan jika error (misal Drive API belum diaktifkan)
+        }
+
         // Simpan File ID ke memori (tandai sudah terkirim)
         scriptProperties.setProperty(fileId, 'sent');
       }
@@ -117,3 +124,40 @@ Kita ingin skrip ini berjalan otomatis tanpa perlu kita klik terus.
 5. Upload satu file PDF ke dalam folder "Buku Pemrograman".
 6. Tunggu maksimal 5 menit (atau kamu bisa langsung klik tombol `Run` di editor GAS untuk mempercepat).
 7. Cek *database* MySQL lokal kamu di tabel `books` dan `categories`. Harusnya buku baru kamu sudah otomatis masuk dan siap digunakan di web Ario Library!
+
+---
+
+## 🔒 Tingkat Lanjut (Advanced): Menonaktifkan Fitur Download Otomatis
+Jika Anda ingin setiap buku PDF yang di-upload ke folder Ario Library otomatis diblokir fitur *Download, Print, dan Copy*-nya (sehingga user web hanya bisa membaca), ikuti langkah ini:
+
+1. Buka kembali editor Google Apps Script Anda.
+2. Di bilah menu sebelah kiri, cari menu **Services** (Layanan) dan klik lambang plus (**+**).
+3. Scroll ke bawah, pilih **Drive API** (biarkan versi defaultnya), lalu klik **Add**.
+4. Tambahkan kode satu kali jalan ini di baris paling bawah editor untuk mengunci semua buku yang *sudah ada* di Google Drive Anda:
+
+```javascript
+function lockAllExistingPdfs() {
+  const FOLDER_ID = ROOT_FOLDER_ID; // Mengambil ID dari variabel atas
+  const rootFolder = DriveApp.getFolderById(FOLDER_ID);
+  
+  const subFolders = rootFolder.getFolders();
+  while (subFolders.hasNext()) {
+    let folder = subFolders.next();
+    let files = folder.getFilesByType(MimeType.PDF);
+    while (files.hasNext()) {
+      let file = files.next();
+      try {
+        // Menggunakan Advanced Drive API untuk memblokir fitur download
+        Drive.Files.update({copyRequiresWriterPermission: true}, file.getId());
+        Logger.log("Sukses mengunci: " + file.getName());
+      } catch (e) {
+        Logger.log("Gagal mengunci: " + e.message);
+      }
+    }
+  }
+}
+```
+
+5. Pilih fungsi `lockAllExistingPdfs` di menu atas, lalu klik **Run** (Jalankan) satu kali saja. Ini akan memakan waktu beberapa detik/menit tergantung jumlah buku Anda.
+
+6. **(Opsi Tambahan)** Agar buku yang di-upload di masa depan otomatis terkunci juga, tambahkan kode `Drive.Files.update({copyRequiresWriterPermission: true}, fileId);` ke dalam fungsi `scanLibrary` yang sudah ada, tepat sebelum kode `scriptProperties.setProperty(fileId, 'sent');`.

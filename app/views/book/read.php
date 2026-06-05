@@ -33,6 +33,31 @@
     </div>
 </div>
 
+<script>
+    // Memblokir klik kanan
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // Memblokir tombol kombinasi Inspect Element
+    document.onkeydown = function(e) {
+        // Blokir F12
+        if (e.keyCode === 123) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+I (Inspect)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+            return false;
+        }
+        // Blokir Ctrl+U (View Source)
+        if (e.ctrlKey && e.keyCode === 85) {
+            return false;
+        }
+    };
+</script>
+
 <style>
     /* Reader Security Overlay */
     .reader-overlay {
